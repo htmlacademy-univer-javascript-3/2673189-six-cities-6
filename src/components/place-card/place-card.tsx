@@ -8,7 +8,7 @@ type PlaceCardProps = {
   rating: number;
 }
 
-function PlaceCard({
+export default function PlaceCard({
   imageSrc,
   isPremium,
   pricePerNight,
@@ -64,4 +64,3 @@ function PlaceCard({
     </article>
   );
 }
-export default PlaceCard;
