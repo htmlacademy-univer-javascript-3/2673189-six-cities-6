@@ -9,19 +9,21 @@ import MainPage from '../../pages/main-pages/main-page';
 import OfferPage from '../../pages//offer-pages/offer-page';
 
 import NotFoundPage from '../../pages/not-found-page/not-found-page';
+import { Offer } from '../../types/index';
 
 type AppProps = {
     placesCnt: number;
+    offers: Offer[];
 }
 
-export default function App({placesCnt}: AppProps): JSX.Element {
+export default function App({placesCnt, offers}: AppProps): JSX.Element {
   return (
     <HelmetProvider>
       <BrowserRouter>
         <Routes>
           <Route
             path={AppRoute.ROOT}
-            element={<MainPage placesCnt={placesCnt}/>}
+            element={<MainPage placesCnt={placesCnt} offers={offers}/>}
           />
           <Route
             path={AppRoute.LOGIN}
@@ -31,14 +33,14 @@ export default function App({placesCnt}: AppProps): JSX.Element {
             path={AppRoute.FAVORITES}
             element={
               <PrivateRoute
-                authorizationStatus={AuthStatus.NOAUTH}
+                authorizationStatus={AuthStatus.AUTH}
               >
-                <FavoritesPage />
+                <FavoritesPage offers={offers}/>
               </PrivateRoute>
             }
           />
           <Route
-            path={AppRoute.OFFER}
+            path={`${AppRoute.OFFER}/:id`}
             element={<OfferPage />}
           />
           <Route
