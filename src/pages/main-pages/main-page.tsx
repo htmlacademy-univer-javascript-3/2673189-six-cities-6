@@ -1,6 +1,6 @@
 import {Helmet} from 'react-helmet-async';
 import OffersList from '../../components/offer-list/offer-list';
-import { Offer } from '../../types/index';
+import { Offer } from '@types';
 
 type MainPageProps = {
     placesCnt: number;

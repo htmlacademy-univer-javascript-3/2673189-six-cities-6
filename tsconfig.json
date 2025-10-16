@@ -1,5 +1,16 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "baseUrl": "./src",
+    "paths": {
+      "@pages/*": ["pages/*"],
+      "@components/*": ["components/*"],
+      "@types": ["types/index.ts"],
+      "@types/*": ["types/*"],
+      "@mocks/*": ["mocks/*"],
+      "@consts/*": ["consts/*"],
+      "@consts": ["consts/index.ts"]
+    },
     "target": "ES2020",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",

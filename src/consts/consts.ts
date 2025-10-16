@@ -1,4 +1,4 @@
-export const PLACES_CNT = 312;
+export const PLACES_CNT: number = 312;
 
 export enum AppRoute {
   ROOT = '/',

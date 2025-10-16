@@ -1,4 +1,4 @@
-import { Offer } from '../../types/index';
+import { Offer } from '@types';
 import PlaceCard from '../place-card/place-card';
 import { useState } from 'react';
 

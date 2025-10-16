@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
-import { AppRoute } from '../../consts';
-import ReviewForm from '../../components/review-form/review-form';
+import { AppRoute } from '@consts/consts';
+import ReviewForm from '@components/review-form/review-form';
 
 
 export default function OfferPage(): JSX.Element {

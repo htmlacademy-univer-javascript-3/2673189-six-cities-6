@@ -1,7 +1,7 @@
 import {Helmet} from 'react-helmet-async';
-import { Offer } from '../../types/index';
+import { Offer } from '@types';
 import { Link } from 'react-router-dom';
-import { AppRoute } from '../../consts';
+import { AppRoute } from '@consts/consts';
 
 type FavoritesPageProps = {
   offers: Offer[];

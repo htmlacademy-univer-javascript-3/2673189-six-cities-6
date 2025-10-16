@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './components/app/app.tsx';
-import { offers } from './mocks/offers.ts';
+import App from '@components/app/app.tsx';
+import { offers } from '@mocks/offers';
 
-import { PLACES_CNT } from './consts.tsx';
+import { PLACES_CNT } from '@consts/consts';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
