@@ -9,14 +9,15 @@ import MainPage from '@pages/main-pages/main-page';
 import OfferPage from '@pages/offer-pages/offer-page';
 
 import NotFoundPage from '@pages/not-found-page/not-found-page';
-import { Offer } from '@types';
+import { Offer, Review } from '@types';
 
 type AppProps = {
     placesCnt: number;
     offers: Offer[];
+    reviews: Review[];
 }
 
-export default function App({placesCnt, offers}: AppProps): JSX.Element {
+export default function App({placesCnt, offers, reviews}: AppProps): JSX.Element {
   return (
     <HelmetProvider>
       <BrowserRouter>
@@ -41,7 +42,7 @@ export default function App({placesCnt, offers}: AppProps): JSX.Element {
           />
           <Route
             path={`${AppRoute.OFFER}/:id`}
-            element={<OfferPage />}
+            element={<OfferPage offers={offers} reviews={reviews} />}
           />
           <Route
             path='*'

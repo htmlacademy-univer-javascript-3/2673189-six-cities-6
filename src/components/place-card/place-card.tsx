@@ -1,16 +1,17 @@
 import { Offer } from '@types';
 import { Link } from 'react-router-dom';
-import { AppRoute } from '@consts/consts';
+import { AppRoute, CardImageWrapperClass, CardType } from '@consts/consts';
 
 type PlaceCardProps = {
   offer: Offer;
   onMouse: () => void;
   offMouse: () => void;
+  cardType: CardType;
 }
 
-export default function PlaceCard({ offer, onMouse, offMouse } : PlaceCardProps) : JSX.Element {
+export default function PlaceCard({ offer, onMouse, offMouse, cardType } : PlaceCardProps) : JSX.Element {
   return (
-    <article className="cities__card place-card"
+    <article className={`${cardType} place-card`}
       onMouseEnter={onMouse}
       onMouseLeave={offMouse}
     >
@@ -20,12 +21,18 @@ export default function PlaceCard({ offer, onMouse, offMouse } : PlaceCardProps)
         </div>
         :
         null}
-      <div className="cities__image-wrapper place-card__image-wrapper">
+      <div className={`${CardImageWrapperClass[cardType]} place-card__image-wrapper`}>
         <Link to={`${AppRoute.OFFER}/${offer.id}`}>
-          <img className="place-card__image" src={offer.imageSrc} width="260" height="200" alt="Place image"/>
+          <img
+            className="place-card__image"
+            src={offer.imageSrc}
+            width={cardType === CardType.Favorites ? 150 : 260}
+            height={cardType === CardType.Favorites ? 110 : 200}
+            alt="Place image"
+          />
         </Link>
       </div>
-      <div className="place-card__info">
+      <div className={`${cardType === CardType.Favorites ? 'favorites__card-info' : ''} place-card__info`}>
         <div className="place-card__price-wrapper">
           <div className="place-card__price">
             <b className="place-card__price-value">&euro;{offer.price}</b>
