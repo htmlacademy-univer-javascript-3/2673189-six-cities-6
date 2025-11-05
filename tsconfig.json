@@ -7,7 +7,8 @@
       "@types/*": ["./src/types/*"],
       "@mocks/*": ["./src/mocks/*"],
       "@consts/*": ["./src/consts/*"],
-      "@consts": ["./src/consts/index.ts"]
+      "@consts": ["./src/consts/index.ts"],
+      "@hooks/*": ["./src/hooks/*"]
     },
     "target": "ES2020",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],

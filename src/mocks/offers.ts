@@ -9,8 +9,11 @@ export const offers: Offer[] = [
     'price': 300,
     'city': {
       'name': 'Amsterdam',
-      'latitude': 52.37454,
-      'longitude': 4.897976,
+      'location': {
+        'latitude': 52.3909553943508,
+        'longitude': 4.85309666406198,
+        'zoom': 16
+      }
     },
     'isFavorite': true,
     'isPremium': false,
@@ -24,8 +27,11 @@ export const offers: Offer[] = [
     'price': 200,
     'city': {
       'name': 'Amsterdam',
-      'latitude': 52.37454,
-      'longitude': 4.897976,
+      'location': {
+        'latitude': 52.3609553943508,
+        'longitude': 4.85309666406198,
+        'zoom': 16
+      }
     },
     'isFavorite': false,
     'isPremium': true,
@@ -39,8 +45,11 @@ export const offers: Offer[] = [
     'price': 151,
     'city': {
       'name': 'Amsterdam',
-      'latitude': 52.37454,
-      'longitude': 4.897976,
+      'location': {
+        'latitude': 52.3909553943508,
+        'longitude': 4.929309666406198,
+        'zoom': 16
+      }
     },
     'isFavorite': false,
     'isPremium': true,
@@ -54,8 +63,11 @@ export const offers: Offer[] = [
     'price': 469,
     'city': {
       'name': 'Amsterdam',
-      'latitude': 52.37454,
-      'longitude': 4.897976,
+      'location': {
+        'latitude': 52.3809553943508,
+        'longitude': 4.939309666406198,
+        'zoom': 16
+      }
     },
 
     'isFavorite': true,
