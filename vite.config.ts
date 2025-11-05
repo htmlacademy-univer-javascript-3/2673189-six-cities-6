@@ -3,10 +3,20 @@
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@pages': path.resolve(__dirname, 'src/pages'),
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@consts': path.resolve(__dirname, 'src/consts'),
+      '@types': path.resolve(__dirname, 'src/types'),
+      '@mocks': path.resolve(__dirname, 'src/mocks'),
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

@@ -1,11 +1,13 @@
-import PlaceCard from '../../components/place-card/place-card';
 import {Helmet} from 'react-helmet-async';
+import OffersList from '../../components/offer-list/offer-list';
+import { Offer } from '@types';
 
 type MainPageProps = {
     placesCnt: number;
+    offers: Offer[];
 }
 
-export default function MainPage({placesCnt}: MainPageProps): JSX.Element {
+export default function MainPage({placesCnt, offers}: MainPageProps): JSX.Element {
   return (
     <div className="page page--gray page--main">
       <Helmet>
@@ -97,57 +99,7 @@ export default function MainPage({placesCnt}: MainPageProps): JSX.Element {
                   <li className="places__option" tabIndex={0}>Top rated first</li>
                 </ul>
               </form>
-              <div className="cities__places-list places__list tabs__content">
-                <PlaceCard
-                  imageSrc="img/apartment-01.jpg"
-                  isPremium
-                  pricePerNight={120}
-                  title='Beautiful &amp; luxurious apartment at great location'
-                  typeAppartments='Apartment'
-                  isBookmark={false}
-                  rating={4}
-                />
-
-                <PlaceCard
-                  imageSrc="img/room.jpg"
-                  isPremium={false}
-                  pricePerNight={80}
-                  title='Wood and stone place'
-                  typeAppartments='Room'
-                  isBookmark
-                  rating={4}
-                />
-
-                <PlaceCard
-                  imageSrc="img/apartment-02.jpg"
-                  isPremium={false}
-                  pricePerNight={132}
-                  title='Canal View Prinsengracht'
-                  typeAppartments='Apartment'
-                  isBookmark={false}
-                  rating={4}
-                />
-
-                <PlaceCard
-                  imageSrc="img/apartment-03.jpg"
-                  isPremium
-                  pricePerNight={180}
-                  title='Nice, cozy, warm big bed apartment'
-                  typeAppartments='Apartment'
-                  isBookmark={false}
-                  rating={5}
-                />
-
-                <PlaceCard
-                  imageSrc="img/room.jpg"
-                  isPremium={false}
-                  pricePerNight={80}
-                  title='Wood and stone place'
-                  typeAppartments='Room'
-                  isBookmark
-                  rating={4}
-                />
-              </div>
+              <OffersList offers={offers} />
             </section>
             <div className="cities__right-section">
               <section className="cities__map map"></section>
