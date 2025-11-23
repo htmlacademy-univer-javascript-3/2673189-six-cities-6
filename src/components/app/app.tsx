@@ -2,29 +2,30 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import {HelmetProvider} from 'react-helmet-async';
 import { AppRoute, AuthStatus } from '@consts/consts';
+import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
+import { setOffers, setReviews } from '@store/action';
 import PrivateRoute from '../private-route/private-route';
 import FavoritesPage from '@pages/favorites-pages/favorites-page';
 import LoginPage from '@pages/login-pages/login-page';
 import MainPage from '@pages/main-pages/main-page';
 import OfferPage from '@pages/offer-pages/offer-page';
-
 import NotFoundPage from '@pages/not-found-page/not-found-page';
-import { Offer, Review } from '@types';
 
-type AppProps = {
-    placesCnt: number;
-    offers: Offer[];
-    reviews: Review[];
-}
 
-export default function App({placesCnt, offers, reviews}: AppProps): JSX.Element {
+export default function App(): JSX.Element {
+  const offers = useAppSelector((state) => state.offers);
+  const reviews = useAppSelector((state) => state.reviews);
+  const dispatch = useAppDispatch();
+
+  dispatch(setOffers(offers));
+  dispatch(setReviews(reviews));
   return (
     <HelmetProvider>
       <BrowserRouter>
         <Routes>
           <Route
             path={AppRoute.ROOT}
-            element={<MainPage placesCnt={placesCnt} offers={offers}/>}
+            element={<MainPage />}
           />
           <Route
             path={AppRoute.LOGIN}
@@ -36,13 +37,13 @@ export default function App({placesCnt, offers, reviews}: AppProps): JSX.Element
               <PrivateRoute
                 authorizationStatus={AuthStatus.AUTH}
               >
-                <FavoritesPage offers={offers}/>
+                <FavoritesPage />
               </PrivateRoute>
             }
           />
           <Route
             path={`${AppRoute.OFFER}/:id`}
-            element={<OfferPage offers={offers} reviews={reviews} />}
+            element={<OfferPage />}
           />
           <Route
             path='*'
