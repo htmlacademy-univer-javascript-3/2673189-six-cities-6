@@ -1,14 +1,12 @@
 import {Helmet} from 'react-helmet-async';
-import { Offer } from '@types';
 import { Link } from 'react-router-dom';
 import { CardType } from '@consts/consts';
+import { useAppSelector } from '@hooks/dispatch';
 import PlaceCard from '@components/place-card/place-card';
 
-type FavoritesPageProps = {
-  offers: Offer[];
-};
 
-export default function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
+export default function FavoritesPage(): JSX.Element {
+  const offers = useAppSelector((state) => state.offers);
   const favorites = offers.filter((offer) => offer.isFavorite);
 
   const cities = Array.from(new Set(favorites.map((offer) => offer.city.name))).sort();

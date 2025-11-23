@@ -2,20 +2,18 @@ import { Helmet } from 'react-helmet-async';
 import { AppRoute } from '@consts/consts';
 import ReviewForm from '@components/review-form/review-form';
 import {useParams} from 'react-router-dom';
-import { Offer, Review } from '@types';
 import NotFoundPage from '@pages/not-found-page/not-found-page';
 import ReviewsList from '@components/review-list/review-list';
 import Map from '@components/map/map';
 import { MapClassName } from '@consts/consts';
 import NearbyOffersList from '@components/nearby-offers-list/nearby-offers-list';
+import { useAppSelector } from '@hooks/dispatch';
 
-type OfferPageProps = {
-  offers: Offer[];
-  reviews: Review[];
-};
 
-export default function OfferPage({ offers, reviews }: OfferPageProps): JSX.Element {
+export default function OfferPage(): JSX.Element {
   const params = useParams();
+  const offers = useAppSelector((state) => state.offers);
+  const reviews = useAppSelector((state) => state.reviews);
   const mainOffer = offers.find((item) => item.id === params.id);
 
   if (!mainOffer) {
