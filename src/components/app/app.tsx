@@ -1,24 +1,26 @@
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import {HelmetProvider} from 'react-helmet-async';
+import { HelmetProvider } from 'react-helmet-async';
 import { AppRoute, AuthStatus } from '@consts/consts';
-import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
-import { setOffers, setReviews } from '@store/action';
+import { useAppSelector } from '@hooks/dispatch';
 import PrivateRoute from '../private-route/private-route';
 import FavoritesPage from '@pages/favorites-pages/favorites-page';
 import LoginPage from '@pages/login-pages/login-page';
 import MainPage from '@pages/main-pages/main-page';
 import OfferPage from '@pages/offer-pages/offer-page';
 import NotFoundPage from '@pages/not-found-page/not-found-page';
+import LoadingPage from '@pages/loading-page/loading-page';
 
 
 export default function App(): JSX.Element {
-  const offers = useAppSelector((state) => state.offers);
-  const reviews = useAppSelector((state) => state.reviews);
-  const dispatch = useAppDispatch();
+  const authorizationStatus = useAppSelector((state) => state.authorizationStatus);
+  const isOffersDataLoading = useAppSelector((state) => state.isOffersDataLoading);
 
-  dispatch(setOffers(offers));
-  dispatch(setReviews(reviews));
+  if (authorizationStatus === AuthStatus.UNKNOWN || isOffersDataLoading) {
+    return (
+      <LoadingPage />
+    );
+  }
   return (
     <HelmetProvider>
       <BrowserRouter>
