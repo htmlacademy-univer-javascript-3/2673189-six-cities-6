@@ -1,10 +1,21 @@
 import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '@types';
-import { setOffers, requireAuthorization, setOffersDataLoadingStatus, setUser, setOfferById, setNearbyOffers } from '@store/action';
+import {
+  setOffers,
+  requireAuthorization,
+  setOffersDataLoadingStatus,
+  setUser,
+  setOfferById,
+  setNearbyOffers,
+  setReviews,
+  setReviewsLoadingStatus,
+  setReviewPostingStatus,
+  setError,
+} from '@store/action';
 import { saveToken, dropToken } from '../services/token';
 import { APIRoute, AuthStatus } from '@consts/consts';
-import { UserData, User } from '@types';
+import { UserData, User, Review } from '@types';
 import type { OfferDto } from '../types/offer-dto.type';
 import { adaptOfferToClient } from '@services/offer-adapter';
 
@@ -90,4 +101,55 @@ export const fetchNearbyOffersAction = createAsyncThunk<void, string, {
     const { data } = await api.get<OfferDto[]>(`${APIRoute.Offers}/${offerId}/nearby`);
     dispatch(setNearbyOffers(data.map(adaptOfferToClient).slice(0, 3)));
   },
+);
+
+export const fetchReviewsByOfferIdAction = createAsyncThunk<void, string, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'data/fetchReviewsByOfferId',
+  async (offerId, { dispatch, extra: api }) => {
+    dispatch(setReviewsLoadingStatus(true));
+    dispatch(setError(null));
+    try {
+      const { data } = await api.get<Review[]>(`${APIRoute.Comments}/${offerId}`);
+      dispatch(setReviews(data));
+    } catch {
+      dispatch(setError('Failed to load reviews.'));
+      dispatch(setReviews([]));
+    } finally {
+      dispatch(setReviewsLoadingStatus(false));
+    }
+  }
+);
+
+type PostReviewPayload = {
+  offerId: string;
+  comment: string;
+  rating: number;
+};
+
+export const postReviewAction = createAsyncThunk<Review[] | null, PostReviewPayload, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'data/postReview',
+  async ({ offerId, comment, rating }, { dispatch, extra: api }) => {
+    dispatch(setReviewPostingStatus(true));
+    dispatch(setError(null));
+
+    try {
+      const { data } = await api.post<Review[]>(`${APIRoute.Comments}/${offerId}`, { comment, rating });
+      dispatch(setReviews(data));
+      return data;
+    } catch (e) {
+      // If we throw here and the caller doesn't handle it, React error overlay can take over.
+      dispatch(setError('Failed to send review. Please try again.'));
+      return null;
+    } finally {
+      dispatch(setReviewPostingStatus(false));
+    }
+  }
 );
