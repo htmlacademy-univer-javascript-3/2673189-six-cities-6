@@ -9,7 +9,8 @@
       "@consts/*": ["./src/consts/*"],
       "@consts": ["./src/consts/index.ts"],
       "@hooks/*": ["./src/hooks/*"],
-      "@store/*": ["./src/store/*"]
+      "@store/*": ["./src/store/*"],
+      "@services/*": ["./src/services/*"]
     },
     "target": "ES2020",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
