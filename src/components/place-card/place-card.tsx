@@ -10,6 +10,8 @@ type PlaceCardProps = {
 }
 
 export default function PlaceCard({ offer, onMouse, offMouse, cardType } : PlaceCardProps) : JSX.Element {
+  const ratingWidth = `${(Math.round(offer.rating) / 5) * 100}%`;
+
   return (
     <article className={`${cardType} place-card`}
       onMouseEnter={onMouse}
@@ -55,7 +57,7 @@ export default function PlaceCard({ offer, onMouse, offMouse, cardType } : Place
         </div>
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
-            <span style={{width: `calc(100% / 5 * ${offer.rating}`}}></span>
+            <span style={{width: ratingWidth}}></span>
             <span className="visually-hidden">Rating</span>
           </div>
         </div>

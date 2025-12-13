@@ -1,5 +1,4 @@
-
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AppRoute, AuthStatus } from '@consts/consts';
 import { useAppSelector } from '@hooks/dispatch';
@@ -21,6 +20,7 @@ export default function App(): JSX.Element {
       <LoadingPage />
     );
   }
+
   return (
     <HelmetProvider>
       <BrowserRouter>
@@ -31,14 +31,16 @@ export default function App(): JSX.Element {
           />
           <Route
             path={AppRoute.LOGIN}
-            element={<LoginPage />}
+            element={
+              authorizationStatus === AuthStatus.AUTH
+                ? <Navigate to={AppRoute.ROOT} />
+                : <LoginPage />
+            }
           />
           <Route
             path={AppRoute.FAVORITES}
             element={
-              <PrivateRoute
-                authorizationStatus={AuthStatus.AUTH}
-              >
+              <PrivateRoute authorizationStatus={authorizationStatus}>
                 <FavoritesPage />
               </PrivateRoute>
             }
