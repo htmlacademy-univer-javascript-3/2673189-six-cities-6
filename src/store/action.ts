@@ -5,6 +5,10 @@ import { AuthStatus, SortType } from '@consts/consts';
 
 export const setOffers = createAction<Offer[]>('offers/setOffers');
 export const setReviews = createAction<Review[]>('reviews/setReviews');
+export const clearReviews = createAction('reviews/clearReviews');
+export const setReviewsLoadingStatus = createAction<boolean>('reviews/setReviewsLoadingStatus');
+export const setReviewPostingStatus = createAction<boolean>('reviews/setReviewPostingStatus');
+
 export const changeCity = createAction<string>('city/changeCity');
 export const setSortType = createAction<SortType>('sort/setSortType');
 

@@ -4,12 +4,13 @@ import { useParams } from 'react-router-dom';
 import NotFoundPage from '@pages/not-found-page/not-found-page';
 import ReviewsList from '@components/review-list/review-list';
 import Map from '@components/map/map';
-import { MapClassName } from '@consts/consts';
+import { AuthStatus, MapClassName } from '@consts/consts';
 import NearbyOffersList from '@components/nearby-offers-list/nearby-offers-list';
 import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
 import { useEffect } from 'react';
-import { fetchNearbyOffersAction, fetchOfferByIdAction } from '@store/api-action';
+import { fetchNearbyOffersAction, fetchOfferByIdAction, fetchReviewsByOfferIdAction } from '@store/api-action';
 import Header from '@components/header/header';
+import { clearReviews } from '@store/action';
 
 
 export default function OfferPage(): JSX.Element {
@@ -19,14 +20,17 @@ export default function OfferPage(): JSX.Element {
   const mainOffer = useAppSelector((state) => state.offerById);
   const nearbyOffers = useAppSelector((state) => state.nearbyOffers);
   const reviews = useAppSelector((state) => state.reviews);
+  const authorizationStatus = useAppSelector((state) => state.authorizationStatus);
 
   useEffect(() => {
     if (!id) {
       return;
     }
 
+    dispatch(clearReviews());
     dispatch(fetchOfferByIdAction(id));
     dispatch(fetchNearbyOffersAction(id));
+    dispatch(fetchReviewsByOfferIdAction(id));
   }, [dispatch, id]);
 
   if (!id) {
@@ -42,7 +46,7 @@ export default function OfferPage(): JSX.Element {
   const author = mainOffer.author;
 
   return (
-    <div className="page">
+    <div className="page" key={id}>
       <Helmet>
         <title>6 cities: offer {mainOffer.id}</title>
       </Helmet>
@@ -120,7 +124,9 @@ export default function OfferPage(): JSX.Element {
               <section className="offer__reviews reviews">
                 <h2 className="reviews__title">Reviews &middot; <span className="reviews__amount">{reviews ? reviews.length : 0}</span></h2>
                 <ReviewsList reviews={reviews}/>
-                <ReviewForm/>
+                {authorizationStatus === AuthStatus.AUTH && id ? (
+                  <ReviewForm offerId={id} />
+                ) : null}
               </section>
             </div>
           </div>
