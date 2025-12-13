@@ -34,10 +34,12 @@ function Map(props: MapProps): JSX.Element {
     if (map) {
       const markerLayer = layerGroup().addTo(map);
       offers.forEach((offer) => {
-        if (offer && offer.city.location) {
+        if (offer?.location) {
+          const { latitude, longitude } = offer.location;
+
           const marker = new Marker({
-            lat: offer.city.location.latitude,
-            lng: offer.city.location.longitude
+            lat: Number(latitude),
+            lng: Number(longitude)
           });
 
           marker

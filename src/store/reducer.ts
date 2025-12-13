@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { setOffers, changeCity, setReviews, setSortType, requireAuthorization, setError, setOffersDataLoadingStatus } from './action';
+import { setOffers, changeCity, setReviews, setSortType, requireAuthorization, setUser, setError, setOffersDataLoadingStatus, setOfferById, setNearbyOffers } from './action';
 import { Offer } from '../types/offers.type';
-import { Review } from '../types/reviews.type';
+import { Review, User } from '../types/reviews.type';
 import { AuthStatus, SortType } from '@consts/consts';
 
 
@@ -11,8 +11,11 @@ type StateType = {
   reviews: Review[];
   sortType: SortType;
   authorizationStatus: AuthStatus;
+  user: User | null;
   error: string | null;
   isOffersDataLoading: boolean;
+  offerById: Offer | null;
+  nearbyOffers: Offer[];
 };
 
 const initialState: StateType = {
@@ -21,8 +24,11 @@ const initialState: StateType = {
   reviews: [],
   sortType: SortType.Popular,
   authorizationStatus: AuthStatus.UNKNOWN,
+  user: null,
   error: null,
   isOffersDataLoading: false,
+  offerById: null,
+  nearbyOffers: [],
 };
 
 export const reducer = createReducer(initialState, (builder) => {
@@ -42,10 +48,19 @@ export const reducer = createReducer(initialState, (builder) => {
     .addCase(requireAuthorization, (state, action) => {
       state.authorizationStatus = action.payload;
     })
+    .addCase(setUser, (state, action) => {
+      state.user = action.payload;
+    })
     .addCase(setError, (state, action) => {
       state.error = action.payload;
     })
     .addCase(setOffersDataLoadingStatus, (state, action) => {
       state.isOffersDataLoading = action.payload;
+    })
+    .addCase(setOfferById, (state, action) => {
+      state.offerById = action.payload;
+    })
+    .addCase(setNearbyOffers, (state, action) => {
+      state.nearbyOffers = action.payload;
     });
 });
