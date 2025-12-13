@@ -1,22 +1,26 @@
 import { City } from './city.type';
-import { User } from './reviews.type';
 import { Location } from './location.type';
 
-export type Offer = {
+// Тип ровно под формат API.
+export type OfferDto = {
   id: string;
   title: string;
-  description?: string;
   type: string;
-  imageSrc: string;
   price: number;
-  images?: string[];
+  previewImage?: string;
   city: City;
   location: Location;
-  amentity?: string[];
-  author?: User;
   isFavorite: boolean;
   isPremium: boolean;
   rating: number;
+  description?: string;
+  images?: string[];
+  goods?: string[];
+  host?: {
+    name: string;
+    avatarUrl: string;
+    isPro: boolean;
+  };
   bedrooms?: number;
   maxAdults?: number;
 };

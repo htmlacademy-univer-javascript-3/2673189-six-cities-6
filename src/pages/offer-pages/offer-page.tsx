@@ -1,68 +1,58 @@
 import { Helmet } from 'react-helmet-async';
-import { AppRoute } from '@consts/consts';
 import ReviewForm from '@components/review-form/review-form';
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import NotFoundPage from '@pages/not-found-page/not-found-page';
 import ReviewsList from '@components/review-list/review-list';
 import Map from '@components/map/map';
 import { MapClassName } from '@consts/consts';
 import NearbyOffersList from '@components/nearby-offers-list/nearby-offers-list';
-import { useAppSelector } from '@hooks/dispatch';
+import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
+import { useEffect } from 'react';
+import { fetchNearbyOffersAction, fetchOfferByIdAction } from '@store/api-action';
+import Header from '@components/header/header';
 
 
 export default function OfferPage(): JSX.Element {
-  const params = useParams();
-  const offers = useAppSelector((state) => state.offers);
+  const { id } = useParams();
+  const dispatch = useAppDispatch();
+
+  const mainOffer = useAppSelector((state) => state.offerById);
+  const nearbyOffers = useAppSelector((state) => state.nearbyOffers);
   const reviews = useAppSelector((state) => state.reviews);
-  const mainOffer = offers.find((item) => item.id === params.id);
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    dispatch(fetchOfferByIdAction(id));
+    dispatch(fetchNearbyOffersAction(id));
+  }, [dispatch, id]);
+
+  if (!id) {
+    return <NotFoundPage />;
+  }
 
   if (!mainOffer) {
     return <NotFoundPage />;
   }
 
-  const nearbyOffers = offers.filter(
-    (offer) => offer.city.name === mainOffer.city.name && offer.id !== mainOffer.id
-  ).slice(0, 3);
+  const images = mainOffer.images ?? [mainOffer.imageSrc];
+  const amentity = mainOffer.amentity ?? [];
+  const author = mainOffer.author;
 
   return (
     <div className="page">
       <Helmet>
         <title>6 cities: offer {mainOffer.id}</title>
       </Helmet>
-      <header className="header">
-        <div className="container">
-          <div className="header__wrapper">
-            <div className="header__left">
-              <a className="header__logo-link" href={AppRoute.ROOT}>
-                <img className="header__logo" src="img/logo.svg" alt="6 cities logo" width="81" height="41"/>
-              </a>
-            </div>
-            <nav className="header__nav">
-              <ul className="header__nav-list">
-                <li className="header__nav-item user">
-                  <a className="header__nav-link header__nav-link--profile" href="#">
-                    <div className="header__avatar-wrapper user__avatar-wrapper">
-                    </div>
-                    <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                    <span className="header__favorite-count">3</span>
-                  </a>
-                </li>
-                <li className="header__nav-item">
-                  <a className="header__nav-link" href="#">
-                    <span className="header__signout">Sign out</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="page__main page__main--offer">
         <section className="offer">
           <div className="offer__gallery-container container">
             <div className="offer__gallery">
-              {mainOffer.images.map((image) => (
+              {images.map((image) => (
                 <div key={image} className="offer__image-wrapper">
                   <img className="offer__image" src={image} alt="Photo studio" />
                 </div>
@@ -88,15 +78,15 @@ export default function OfferPage(): JSX.Element {
               </div>
               <div className="offer__rating rating">
                 <div className="offer__stars rating__stars">
-                  <span style={{width: `calc(100% / 5 * ${mainOffer.rating})`}}></span>
+                  <span style={{width: `${(Math.round(mainOffer.rating) / 5) * 100}%`}}></span>
                   <span className="visually-hidden">Rating</span>
                 </div>
                 <span className="offer__rating-value rating__value">{mainOffer.rating}</span>
               </div>
               <ul className="offer__features">
                 <li className="offer__feature offer__feature--entire">{mainOffer.type}</li>
-                <li className="offer__feature offer__feature--bedrooms">{mainOffer.bedrooms} Bedrooms</li>
-                <li className="offer__feature offer__feature--adults">Max {mainOffer.maxAdults} adults</li>
+                <li className="offer__feature offer__feature--bedrooms">{mainOffer.bedrooms ?? 0} Bedrooms</li>
+                <li className="offer__feature offer__feature--adults">Max {mainOffer.maxAdults ?? 0} adults</li>
               </ul>
               <div className="offer__price">
                 <b className="offer__price-value">&euro;{mainOffer.price}</b>
@@ -105,26 +95,28 @@ export default function OfferPage(): JSX.Element {
               <div className="offer__inside">
                 <h2 className="offer__inside-title">What&apos;s inside</h2>
                 <ul className="offer__inside-list">
-                  {mainOffer.amentity.map((amentity) => (
-                    <li key={amentity} className="offer__inside-item">
-                      {amentity}
+                  {amentity.map((amenities) => (
+                    <li key={amenities} className="offer__inside-item">
+                      {amenities}
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="offer__host">
-                <h2 className="offer__host-title">Meet the host</h2>
-                <div className="offer__host-user user">
-                  <div className={`offer__avatar-wrapper ${mainOffer.author.isPro && 'offer__avatar-wrapper--pro'} user__avatar-wrapper`}>
-                    <img className="offer__avatar user__avatar" src={mainOffer.author.avatarUrl} width="74" height="74" alt="Host avatar" />
+              {author && (
+                <div className="offer__host">
+                  <h2 className="offer__host-title">Meet the host</h2>
+                  <div className="offer__host-user user">
+                    <div className={`offer__avatar-wrapper ${author.isPro && 'offer__avatar-wrapper--pro'} user__avatar-wrapper`}>
+                      <img className="offer__avatar user__avatar" src={author.avatarUrl} width="74" height="74" alt="Host avatar" />
+                    </div>
+                    <span className="offer__user-name">{author.name}</span>
+                    {author.isPro && <span className="offer__user-status">Pro</span>}
                   </div>
-                  <span className="offer__user-name">{mainOffer.author.name}</span>
-                  {mainOffer.author.isPro && <span className="offer__user-status">Pro</span>}
+                  <div className="offer__description">
+                    <p className="offer__text">{mainOffer.description}</p>
+                  </div>
                 </div>
-                <div className="offer__description">
-                  <p className="offer__text">{mainOffer.description}</p>
-                </div>
-              </div>
+              )}
               <section className="offer__reviews reviews">
                 <h2 className="reviews__title">Reviews &middot; <span className="reviews__amount">{reviews ? reviews.length : 0}</span></h2>
                 <ReviewsList reviews={reviews}/>
@@ -134,7 +126,7 @@ export default function OfferPage(): JSX.Element {
           </div>
           <Map
             city={mainOffer.city}
-            offers={[mainOffer, ...nearbyOffers]}
+            offers={[mainOffer, ...(nearbyOffers ?? [])]}
             selectedOffer={mainOffer}
             className={MapClassName.Offer}
           />
