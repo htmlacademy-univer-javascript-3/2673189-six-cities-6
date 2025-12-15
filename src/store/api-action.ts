@@ -86,8 +86,13 @@ export const fetchOfferByIdAction = createAsyncThunk<void, string, {
 }>(
   'data/fetchOfferById',
   async (offerId, {dispatch, extra: api}) => {
-    const { data } = await api.get<OfferDto>(`${APIRoute.Offers}/${offerId}`);
-    dispatch(setOfferById(adaptOfferToClient(data)));
+    try {
+      const { data } = await api.get<OfferDto>(`${APIRoute.Offers}/${offerId}`);
+      dispatch(setOfferById(adaptOfferToClient(data)));
+    } catch (e) {
+      dispatch(setOfferById(null));
+      throw e;
+    }
   },
 );
 
@@ -141,11 +146,13 @@ export const postReviewAction = createAsyncThunk<Review[] | null, PostReviewPayl
     dispatch(setError(null));
 
     try {
-      const { data } = await api.post<Review[]>(`${APIRoute.Comments}/${offerId}`, { comment, rating });
+      await api.post<Review[]>(`${APIRoute.Comments}/${offerId}`, { comment, rating });
+
+      const { data } = await api.get<Review[]>(`${APIRoute.Comments}/${offerId}`);
       dispatch(setReviews(data));
+
       return data;
-    } catch (e) {
-      // If we throw here and the caller doesn't handle it, React error overlay can take over.
+    } catch {
       dispatch(setError('Failed to send review. Please try again.'));
       return null;
     } finally {

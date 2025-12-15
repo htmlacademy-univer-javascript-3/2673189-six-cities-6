@@ -8,7 +8,15 @@ type ReviewsListProps = {
 export default function ReviewsList({ reviews }: ReviewsListProps): JSX.Element {
   const sortedReviews = reviews
     ? [...reviews]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => {
+        const aTime = new Date(a.date).getTime();
+        const bTime = new Date(b.date).getTime();
+
+        const safeATime = Number.isNaN(aTime) ? 0 : aTime;
+        const safeBTime = Number.isNaN(bTime) ? 0 : bTime;
+
+        return safeBTime - safeATime;
+      })
       .slice(0, 10)
     : [];
 

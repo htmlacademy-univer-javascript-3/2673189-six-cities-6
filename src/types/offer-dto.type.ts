@@ -1,7 +1,6 @@
 import { City } from './city.type';
 import { Location } from './location.type';
 
-// Тип ровно под формат API.
 export type OfferDto = {
   id: string;
   title: string;

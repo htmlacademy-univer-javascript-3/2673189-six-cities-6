@@ -1,7 +1,7 @@
 import React from 'react';
 import RatingInput from './rating-input';
 import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
-import { fetchReviewsByOfferIdAction, postReviewAction } from '@store/api-action';
+import { postReviewAction } from '@store/api-action';
 
 type ReviewFormProps = {
   offerId: string;
@@ -47,8 +47,6 @@ export default function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
 
       if (postReviewAction.fulfilled.match(action) && action.payload) {
         setFormData({ comment: '', rating: 0 });
-        // Ensure the new review appears in the list
-        await dispatch(fetchReviewsByOfferIdAction(offerId));
       }
     })();
   };
