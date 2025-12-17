@@ -1,7 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AppRoute, AuthStatus } from '@consts/consts';
-import { useAppSelector } from '@hooks/dispatch';
+import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
+import { useEffect } from 'react';
 import PrivateRoute from '../private-route/private-route';
 import FavoritesPage from '@pages/favorites-pages/favorites-page';
 import LoginPage from '@pages/login-pages/login-page';
@@ -9,14 +10,22 @@ import MainPage from '@pages/main-pages/main-page';
 import OfferPage from '@pages/offer-pages/offer-page';
 import NotFoundPage from '@pages/not-found-page/not-found-page';
 import LoadingPage from '@pages/loading-page/loading-page';
+import { fetchFavoritesAction } from '@store/api-action';
 
 import { selectAuthorizationStatus } from '@store/user-process/user-process.selectors';
 import { selectOffersDataLoadingStatus } from '@store/offers-data/offers-data.selectors';
 
 
 export default function App(): JSX.Element {
+  const dispatch = useAppDispatch();
   const authorizationStatus = useAppSelector(selectAuthorizationStatus);
   const isOffersDataLoading = useAppSelector(selectOffersDataLoadingStatus);
+
+  useEffect(() => {
+    if (authorizationStatus === AuthStatus.AUTH) {
+      dispatch(fetchFavoritesAction());
+    }
+  }, [authorizationStatus, dispatch]);
 
   if (authorizationStatus === AuthStatus.UNKNOWN || isOffersDataLoading) {
     return (
