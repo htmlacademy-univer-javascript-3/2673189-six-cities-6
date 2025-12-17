@@ -5,6 +5,7 @@ import { CardType } from '@consts/consts';
 import { useAppSelector } from '@hooks/dispatch';
 import PlaceCard from '@components/place-card/place-card';
 import Header from '@components/header/header';
+import FavoritesEmptyPage from '@pages/favorites-pages/favorites-empty-page';
 import { selectOffers } from '@store/offers-data/offers-data.selectors';
 
 
@@ -20,6 +21,10 @@ export default function FavoritesPage(): JSX.Element {
     () => Array.from(new Set(favorites.map((offer) => offer.city.name))).sort(),
     [favorites]
   );
+
+  if (favorites.length === 0) {
+    return <FavoritesEmptyPage />;
+  }
 
   return (
     <div className="page">

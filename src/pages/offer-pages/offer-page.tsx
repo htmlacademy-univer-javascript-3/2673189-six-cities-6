@@ -1,14 +1,14 @@
 import { Helmet } from 'react-helmet-async';
 import ReviewForm from '@components/review-form/review-form';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import NotFoundPage from '@pages/not-found-page/not-found-page';
 import ReviewsList from '@components/review-list/review-list';
 import Map from '@components/map/map';
-import { AuthStatus, MapClassName } from '@consts/consts';
+import { AuthStatus, MapClassName, AppRoute } from '@consts/consts';
 import NearbyOffersList from '@components/nearby-offers-list/nearby-offers-list';
 import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
 import { useEffect, useState } from 'react';
-import { fetchNearbyOffersAction, fetchOfferByIdAction, fetchReviewsByOfferIdAction } from '@store/api-action';
+import { changeFavoriteStatusAction, fetchFavoritesAction, fetchNearbyOffersAction, fetchOfferByIdAction, fetchReviewsByOfferIdAction } from '@store/api-action';
 import Header from '@components/header/header';
 import LoadingPage from '@pages/loading-page/loading-page';
 
@@ -22,6 +22,7 @@ import { selectAuthorizationStatus } from '@store/user-process/user-process.sele
 export default function OfferPage(): JSX.Element {
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const mainOffer = useAppSelector(selectOfferById);
   const nearbyOffers = useAppSelector(selectNearbyOffers);
@@ -54,6 +55,26 @@ export default function OfferPage(): JSX.Element {
         setIsOfferLoading(false);
       });
   }, [dispatch, id]);
+
+  const handleFavoriteClick = () => {
+    if (authorizationStatus !== AuthStatus.AUTH) {
+      navigate(AppRoute.LOGIN);
+      return;
+    }
+
+    if (!id || !mainOffer) {
+      return;
+    }
+
+    const status = mainOffer.isFavorite ? 0 : 1;
+    dispatch(changeFavoriteStatusAction({ offerId: id, status }))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchFavoritesAction());
+        // refresh offer details to sync `isFavorite` for the offer page itself
+        dispatch(fetchOfferByIdAction(id));
+      });
+  };
 
   if (!id) {
     return <NotFoundPage />;
@@ -103,7 +124,11 @@ export default function OfferPage(): JSX.Element {
                 <h1 className="offer__name">
                   {mainOffer.title}
                 </h1>
-                <button className={`offer__bookmark-button ${mainOffer.isFavorite && 'offer__bookmark-button--active'} button`} type="button">
+                <button
+                  className={`offer__bookmark-button ${mainOffer.isFavorite ? 'offer__bookmark-button--active' : ''} button`}
+                  type="button"
+                  onClick={handleFavoriteClick}
+                >
                   <svg className="offer__bookmark-icon" width="31" height="33">
                     <use xlinkHref="#icon-bookmark"></use>
                   </svg>

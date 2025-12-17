@@ -2,7 +2,7 @@ import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '@types';
 import { saveToken, dropToken } from '../services/token';
-import { APIRoute, AuthStatus } from '@consts/consts';
+import { APIRoute, AuthStatus, NameSpace } from '@consts/consts';
 import { UserData, User, Review } from '@types';
 import type { OfferDto } from '../types/offer-dto.type';
 import { adaptOfferToClient } from '@services/offer-adapter';
@@ -152,5 +152,55 @@ export const postReviewAction = createAsyncThunk<Review[] | null, PostReviewPayl
     } finally {
       dispatch(setReviewPostingStatus(false));
     }
+  }
+);
+
+type ChangeFavoritePayload = {
+  offerId: string;
+  status: 0 | 1;
+};
+
+export const changeFavoriteStatusAction = createAsyncThunk<void, ChangeFavoritePayload, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'data/changeFavoriteStatus',
+  async ({ offerId, status }, { dispatch, extra: api, getState }) => {
+    const { data } = await api.post<OfferDto>(`${APIRoute.Favorite}/${offerId}/${status}`);
+    const updatedOffer = adaptOfferToClient(data);
+
+    const offers = getState()[NameSpace.Offers].offers;
+
+    dispatch(
+      setOffers(
+        offers.map((offer) => (offer.id === offerId ? { ...offer, isFavorite: updatedOffer.isFavorite } : offer))
+      )
+    );
+  }
+);
+
+export const fetchFavoritesAction = createAsyncThunk<void, undefined, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'data/fetchFavorites',
+  async (_arg, { dispatch, extra: api, getState }) => {
+    const { data } = await api.get<OfferDto[]>(APIRoute.Favorite);
+    const favoritesFromServer = data.map(adaptOfferToClient);
+
+    const favoriteIds = new Set(favoritesFromServer.map((o) => o.id));
+    const offers = getState()[NameSpace.Offers].offers;
+
+    // Keep the full offers list, but sync `isFavorite` flags with server favorites.
+    dispatch(
+      setOffers(
+        offers.map((offer) => ({
+          ...offer,
+          isFavorite: favoriteIds.has(offer.id),
+        }))
+      )
+    );
   }
 );
