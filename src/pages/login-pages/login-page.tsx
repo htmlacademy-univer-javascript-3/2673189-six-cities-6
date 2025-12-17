@@ -5,10 +5,11 @@ import { AppRoute, AuthStatus } from '@consts/consts';
 import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
 import { loginAction } from '@store/api-action';
 import Header from '@components/header/header';
+import { selectAuthorizationStatus } from '@store/user-process/user-process.selectors';
 
 export default function LoginPage() : JSX.Element {
   const dispatch = useAppDispatch();
-  const authorizationStatus = useAppSelector((state) => state.authorizationStatus);
+  const authorizationStatus = useAppSelector(selectAuthorizationStatus);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

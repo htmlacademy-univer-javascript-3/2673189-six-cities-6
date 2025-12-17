@@ -1,23 +1,17 @@
 import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '@types';
-import {
-  setOffers,
-  requireAuthorization,
-  setOffersDataLoadingStatus,
-  setUser,
-  setOfferById,
-  setNearbyOffers,
-  setReviews,
-  setReviewsLoadingStatus,
-  setReviewPostingStatus,
-  setError,
-} from '@store/action';
 import { saveToken, dropToken } from '../services/token';
 import { APIRoute, AuthStatus } from '@consts/consts';
 import { UserData, User, Review } from '@types';
 import type { OfferDto } from '../types/offer-dto.type';
 import { adaptOfferToClient } from '@services/offer-adapter';
+
+import { setOffers, setOffersDataLoadingStatus } from './offers-data/offers-data.slice';
+import { requireAuthorization, setUser } from './user-process/user-process.slice';
+import { setOfferById, setNearbyOffers } from './offer-data/offer-data.slice';
+import { setReviews, setReviewsLoadingStatus, setReviewPostingStatus} from './reviews-data/reviews-data.slice';
+import { setError } from './app-data/app-data.slice';
 
 export const fetchOffersAction = createAsyncThunk<void, undefined, {
   dispatch: AppDispatch;
@@ -86,8 +80,13 @@ export const fetchOfferByIdAction = createAsyncThunk<void, string, {
 }>(
   'data/fetchOfferById',
   async (offerId, {dispatch, extra: api}) => {
-    const { data } = await api.get<OfferDto>(`${APIRoute.Offers}/${offerId}`);
-    dispatch(setOfferById(adaptOfferToClient(data)));
+    try {
+      const { data } = await api.get<OfferDto>(`${APIRoute.Offers}/${offerId}`);
+      dispatch(setOfferById(adaptOfferToClient(data)));
+    } catch (e) {
+      dispatch(setOfferById(null));
+      throw e;
+    }
   },
 );
 
@@ -141,11 +140,13 @@ export const postReviewAction = createAsyncThunk<Review[] | null, PostReviewPayl
     dispatch(setError(null));
 
     try {
-      const { data } = await api.post<Review[]>(`${APIRoute.Comments}/${offerId}`, { comment, rating });
+      await api.post<Review[]>(`${APIRoute.Comments}/${offerId}`, { comment, rating });
+
+      const { data } = await api.get<Review[]>(`${APIRoute.Comments}/${offerId}`);
       dispatch(setReviews(data));
+
       return data;
-    } catch (e) {
-      // If we throw here and the caller doesn't handle it, React error overlay can take over.
+    } catch {
       dispatch(setError('Failed to send review. Please try again.'));
       return null;
     } finally {

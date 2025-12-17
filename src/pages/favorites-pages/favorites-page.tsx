@@ -1,16 +1,26 @@
 import {Helmet} from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
 import { CardType } from '@consts/consts';
 import { useAppSelector } from '@hooks/dispatch';
 import PlaceCard from '@components/place-card/place-card';
 import Header from '@components/header/header';
+import { selectOffers } from '@store/offers-data/offers-data.selectors';
 
 
 export default function FavoritesPage(): JSX.Element {
-  const offers = useAppSelector((state) => state.offers);
-  const favorites = offers.filter((offer) => offer.isFavorite);
+  const offers = useAppSelector(selectOffers);
 
-  const cities = Array.from(new Set(favorites.map((offer) => offer.city.name))).sort();
+  const favorites = useMemo(
+    () => offers.filter((offer) => offer.isFavorite),
+    [offers]
+  );
+
+  const cities = useMemo(
+    () => Array.from(new Set(favorites.map((offer) => offer.city.name))).sort(),
+    [favorites]
+  );
+
   return (
     <div className="page">
       <Helmet>

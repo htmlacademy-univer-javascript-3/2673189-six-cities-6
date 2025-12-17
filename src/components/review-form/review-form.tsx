@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import RatingInput from './rating-input';
 import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
-import { fetchReviewsByOfferIdAction, postReviewAction } from '@store/api-action';
+import { postReviewAction } from '@store/api-action';
+import { selectIsReviewPosting } from '@store/reviews-data/reviews-data.selectors';
+import { selectError } from '@store/app-data/app-data.selectors';
 
 type ReviewFormProps = {
   offerId: string;
@@ -9,29 +11,39 @@ type ReviewFormProps = {
 
 export default function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
   const dispatch = useAppDispatch();
-  const isPosting = useAppSelector((state) => state.isReviewPosting);
-  const error = useAppSelector((state) => state.error);
+  const isPosting = useAppSelector(selectIsReviewPosting);
+  const error = useAppSelector(selectError);
 
   const [formData, setFormData] = React.useState({
     comment: '',
     rating: 0
   });
 
-  const handleFieldChange = (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = evt.target;
+  const handleFieldChange = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = evt.target;
 
-    if (name === 'rating') {
-      setFormData((prev) => ({ ...prev, rating: Number(value) }));
-      return;
-    }
+      if (name === 'rating') {
+        setFormData((prev) => ({ ...prev, rating: Number(value) }));
+        return;
+      }
 
-    if (name === 'comment') {
-      setFormData((prev) => ({ ...prev, comment: value }));
-    }
-  };
+      if (name === 'comment') {
+        setFormData((prev) => ({ ...prev, comment: value }));
+      }
+    },
+    []
+  );
 
-  const commentValue = formData.comment.trim();
-  const isValid = formData.rating >= 1 && formData.rating <= 5 && commentValue.length >= 50 && commentValue.length <= 300;
+  const commentValue = useMemo(() => formData.comment.trim(), [formData.comment]);
+  const isValid = useMemo(
+    () =>
+      formData.rating >= 1 &&
+      formData.rating <= 5 &&
+      commentValue.length >= 50 &&
+      commentValue.length <= 300,
+    [commentValue, formData.rating]
+  );
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault();
@@ -47,8 +59,6 @@ export default function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
 
       if (postReviewAction.fulfilled.match(action) && action.payload) {
         setFormData({ comment: '', rating: 0 });
-        // Ensure the new review appears in the list
-        await dispatch(fetchReviewsByOfferIdAction(offerId));
       }
     })();
   };

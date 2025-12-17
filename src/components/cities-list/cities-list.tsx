@@ -1,5 +1,6 @@
+import { useCallback } from 'react';
 import { useAppDispatch } from '@hooks/dispatch';
-import { changeCity } from '@store/action';
+import { changeCity } from '@store/app-process/app-process.slice';
 
 type CitiesListProps = {
   cities: {
@@ -11,9 +12,12 @@ type CitiesListProps = {
 export default function CitiesList({ cities }: CitiesListProps): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const handleCityChange = (city: string) => {
-    dispatch(changeCity(city));
-  };
+  const handleCityChange = useCallback(
+    (city: string) => {
+      dispatch(changeCity(city));
+    },
+    [dispatch]
+  );
 
   return (
     <ul className="locations__list tabs__list">

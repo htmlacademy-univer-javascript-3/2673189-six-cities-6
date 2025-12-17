@@ -7,38 +7,68 @@ import Map from '@components/map/map';
 import { AuthStatus, MapClassName } from '@consts/consts';
 import NearbyOffersList from '@components/nearby-offers-list/nearby-offers-list';
 import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchNearbyOffersAction, fetchOfferByIdAction, fetchReviewsByOfferIdAction } from '@store/api-action';
 import Header from '@components/header/header';
-import { clearReviews } from '@store/action';
+import LoadingPage from '@pages/loading-page/loading-page';
+
+import { clearReviews } from '@store/reviews-data/reviews-data.slice';
+import { setOfferById } from '@store/offer-data/offer-data.slice';
+import { selectOfferById, selectNearbyOffers } from '@store/offer-data/offer-data.selectors';
+import { selectReviews } from '@store/reviews-data/reviews-data.selectors';
+import { selectAuthorizationStatus } from '@store/user-process/user-process.selectors';
 
 
 export default function OfferPage(): JSX.Element {
   const { id } = useParams();
   const dispatch = useAppDispatch();
 
-  const mainOffer = useAppSelector((state) => state.offerById);
-  const nearbyOffers = useAppSelector((state) => state.nearbyOffers);
-  const reviews = useAppSelector((state) => state.reviews);
-  const authorizationStatus = useAppSelector((state) => state.authorizationStatus);
+  const mainOffer = useAppSelector(selectOfferById);
+  const nearbyOffers = useAppSelector(selectNearbyOffers);
+  const reviews = useAppSelector(selectReviews);
+  const authorizationStatus = useAppSelector(selectAuthorizationStatus);
+
+  const [isOfferLoading, setIsOfferLoading] = useState(false);
+  const [isOfferNotFound, setIsOfferNotFound] = useState(false);
 
   useEffect(() => {
     if (!id) {
       return;
     }
 
+    dispatch(setOfferById(null));
     dispatch(clearReviews());
-    dispatch(fetchOfferByIdAction(id));
+
+    setIsOfferNotFound(false);
+    setIsOfferLoading(true);
+
     dispatch(fetchNearbyOffersAction(id));
     dispatch(fetchReviewsByOfferIdAction(id));
+
+    dispatch(fetchOfferByIdAction(id))
+      .unwrap()
+      .catch(() => {
+        setIsOfferNotFound(true);
+      })
+      .finally(() => {
+        setIsOfferLoading(false);
+      });
   }, [dispatch, id]);
 
   if (!id) {
     return <NotFoundPage />;
   }
 
-  if (!mainOffer) {
+  if (isOfferLoading) {
+    return <LoadingPage />;
+  }
+
+  if (isOfferNotFound) {
     return <NotFoundPage />;
+  }
+
+  if (!mainOffer) {
+    return <LoadingPage />;
   }
 
   const images = mainOffer.images ?? [mainOffer.imageSrc];

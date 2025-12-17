@@ -10,10 +10,13 @@ import OfferPage from '@pages/offer-pages/offer-page';
 import NotFoundPage from '@pages/not-found-page/not-found-page';
 import LoadingPage from '@pages/loading-page/loading-page';
 
+import { selectAuthorizationStatus } from '@store/user-process/user-process.selectors';
+import { selectOffersDataLoadingStatus } from '@store/offers-data/offers-data.selectors';
+
 
 export default function App(): JSX.Element {
-  const authorizationStatus = useAppSelector((state) => state.authorizationStatus);
-  const isOffersDataLoading = useAppSelector((state) => state.isOffersDataLoading);
+  const authorizationStatus = useAppSelector(selectAuthorizationStatus);
+  const isOffersDataLoading = useAppSelector(selectOffersDataLoadingStatus);
 
   if (authorizationStatus === AuthStatus.UNKNOWN || isOffersDataLoading) {
     return (
