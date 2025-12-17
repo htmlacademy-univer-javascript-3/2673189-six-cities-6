@@ -1,93 +1,17 @@
-import { createReducer } from '@reduxjs/toolkit';
-import {
-  setOffers,
-  changeCity,
-  setReviews,
-  clearReviews,
-  setReviewsLoadingStatus,
-  setReviewPostingStatus,
-  setSortType,
-  requireAuthorization,
-  setUser,
-  setError,
-  setOffersDataLoadingStatus,
-  setOfferById,
-  setNearbyOffers
-} from './action';
-import { Offer } from '../types/offers.type';
-import { Review, User } from '../types/reviews.type';
-import { AuthStatus, SortType } from '@consts/consts';
+import { combineReducers } from '@reduxjs/toolkit';
+import { NameSpace } from '@consts/consts';
+import { appProcessSlice } from './app-process/app-process.slice';
+import { userProcessSlice } from './user-process/user-process.slice';
+import { offersDataSlice } from './offers-data/offers-data.slice';
+import { offerDataSlice } from './offer-data/offer-data.slice';
+import { reviewsDataSlice } from './reviews-data/reviews-data.slice';
+import { appDataSlice } from './app-data/app-data.slice';
 
-
-type StateType = {
-  city: string;
-  offers: Offer[];
-  reviews: Review[];
-  isReviewsLoading: boolean;
-  isReviewPosting: boolean;
-  sortType: SortType;
-  authorizationStatus: AuthStatus;
-  user: User | null;
-  error: string | null;
-  isOffersDataLoading: boolean;
-  offerById: Offer | null;
-  nearbyOffers: Offer[];
-};
-
-const initialState: StateType = {
-  city: 'Paris',
-  offers: [],
-  reviews: [],
-  isReviewsLoading: false,
-  isReviewPosting: false,
-  sortType: SortType.Popular,
-  authorizationStatus: AuthStatus.UNKNOWN,
-  user: null,
-  error: null,
-  isOffersDataLoading: false,
-  offerById: null,
-  nearbyOffers: [],
-};
-
-export const reducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase(changeCity, (state, { payload }) => {
-      state.city = payload;
-    })
-    .addCase(setOffers, (state, action) => {
-      state.offers = action.payload;
-    })
-    .addCase(setReviews, (state, action) => {
-      state.reviews = action.payload;
-    })
-    .addCase(clearReviews, (state) => {
-      state.reviews = [];
-    })
-    .addCase(setReviewsLoadingStatus, (state, action) => {
-      state.isReviewsLoading = action.payload;
-    })
-    .addCase(setReviewPostingStatus, (state, action) => {
-      state.isReviewPosting = action.payload;
-    })
-    .addCase(setSortType, (state, { payload }) => {
-      state.sortType = payload;
-    })
-    .addCase(requireAuthorization, (state, action) => {
-      state.authorizationStatus = action.payload;
-    })
-    .addCase(setUser, (state, action) => {
-      state.user = action.payload;
-    })
-    .addCase(setError, (state, action) => {
-      state.error = action.payload;
-    })
-    .addCase(setOffersDataLoadingStatus, (state, action) => {
-      state.isOffersDataLoading = action.payload;
-    })
-    .addCase(setOfferById, (state, action) => {
-      state.offerById = action.payload;
-    })
-    .addCase(setNearbyOffers, (state, action) => {
-      state.nearbyOffers = action.payload;
-    });
+export const rootReducer = combineReducers({
+  [NameSpace.App]: appDataSlice.reducer,
+  [NameSpace.AppProcess]: appProcessSlice.reducer,
+  [NameSpace.User]: userProcessSlice.reducer,
+  [NameSpace.Offers]: offersDataSlice.reducer,
+  [NameSpace.Offer]: offerDataSlice.reducer,
+  [NameSpace.Reviews]: reviewsDataSlice.reducer,
 });

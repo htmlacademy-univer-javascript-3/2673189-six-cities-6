@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { AppRoute, AuthStatus } from '@consts/consts';
 import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
 import { logoutAction } from '@store/api-action';
+import { useCallback, useMemo } from 'react';
+import { selectAuthorizationStatus, selectUser } from '@store/user-process/user-process.selectors';
+import { selectOffers } from '@store/offers-data/offers-data.selectors';
 
 type HeaderProps = {
   isLogoActive?: boolean;
@@ -10,17 +13,23 @@ type HeaderProps = {
 export default function Header({ isLogoActive = false }: HeaderProps): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const authorizationStatus = useAppSelector((state) => state.authorizationStatus);
-  const user = useAppSelector((state) => state.user);
-  const offers = useAppSelector((state) => state.offers);
+  const authorizationStatus = useAppSelector(selectAuthorizationStatus);
+  const user = useAppSelector(selectUser);
+  const offers = useAppSelector(selectOffers);
 
-  const favoritesCount = offers.filter((offer) => offer.isFavorite).length;
+  const favoritesCount = useMemo(
+    () => offers.filter((offer) => offer.isFavorite).length,
+    [offers]
+  );
   const isAuth = authorizationStatus === AuthStatus.AUTH;
 
-  const handleLogoutClick = (evt: React.MouseEvent<HTMLAnchorElement>) => {
-    evt.preventDefault();
-    dispatch(logoutAction());
-  };
+  const handleLogoutClick = useCallback(
+    (evt: React.MouseEvent<HTMLAnchorElement>) => {
+      evt.preventDefault();
+      dispatch(logoutAction());
+    },
+    [dispatch]
+  );
 
   return (
     <header className="header">

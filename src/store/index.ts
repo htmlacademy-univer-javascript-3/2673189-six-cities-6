@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { reducer } from './reducer.ts';
+import { rootReducer } from './reducer.ts';
 import { createAPI } from '../services/api';
-import { requireAuthorization } from './action';
+import { requireAuthorization } from '@store/user-process/user-process.slice';
 import { AuthStatus } from '@consts/consts';
 
 const unauthorizedHandlerRef: { current?: () => void } = {};
@@ -9,7 +9,7 @@ const unauthorizedHandlerRef: { current?: () => void } = {};
 export const api = createAPI(() => unauthorizedHandlerRef.current?.());
 
 export const store = configureStore({
-  reducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       thunk: {

@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { SortType } from '@consts/consts';
 import { useAppDispatch, useAppSelector } from '@hooks/dispatch';
-import { setSortType } from '@store/action';
+import { setSortType } from '@store/app-process/app-process.slice';
+import { selectSortType } from '@store/app-process/app-process.selectors';
 
 export default function SortOptions(): JSX.Element {
   const dispatch = useAppDispatch();
-  const currentSortType = useAppSelector((state) => state.sortType);
+  const currentSortType = useAppSelector(selectSortType);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleOptionClick = (sortType: SortType) => {
-    dispatch(setSortType(sortType));
-    setIsOpen(false);
-  };
-
+  const handleOptionClick = useCallback(
+    (sortType: SortType) => {
+      dispatch(setSortType(sortType));
+      setIsOpen(false);
+    },
+    [dispatch]
+  );
 
   return (
     <form className="places__sorting" action="#" method="get">

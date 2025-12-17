@@ -1,7 +1,7 @@
 import {Helmet} from 'react-helmet-async';
 import OffersList from '@components/offer-list/offer-list';
 import Map from '@components/map/map';
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { MapClassName, SortType, CitiesID } from '@consts/consts';
 import { Offer } from '@types';
 import CitiesList from '@components/cities-list/cities-list';
@@ -9,20 +9,22 @@ import { useAppSelector } from '@hooks/dispatch';
 import SortOptions from '@components/sort-options/sort-options';
 import Header from '@components/header/header';
 
+import { selectCity } from '@store/app-process/app-process.selectors';
+import { selectSortType } from '@store/app-process/app-process.selectors';
+import { selectOffers } from '@store/offers-data/offers-data.selectors';
+
 
 export default function MainPage(): JSX.Element {
-  const offers = useAppSelector((state) => state.offers);
-  const city = useAppSelector((state) => state.city);
-  const sortType = useAppSelector((state) => state.sortType);
+  const offers = useAppSelector(selectOffers);
+  const city = useAppSelector(selectCity);
+  const sortType = useAppSelector(selectSortType);
 
-  const [cityByOffer, setCityByOffer] = useState<Offer[]>(offers);
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
-  const selectedOffer = offers.find((offer) => offer.id === activeOfferId);
 
-  useEffect(() => {
+  const cityByOffer = useMemo<Offer[]>(() => {
     const filteredOffers = offers.filter((offer) => offer.city.name === city);
 
-    const sortedOffers = [...filteredOffers].sort((a, b) => {
+    return [...filteredOffers].sort((a, b) => {
       switch (sortType) {
         case SortType.PriceLowToHigh:
           return a.price - b.price;
@@ -34,9 +36,12 @@ export default function MainPage(): JSX.Element {
           return 0;
       }
     });
-
-    setCityByOffer(sortedOffers);
   }, [city, offers, sortType]);
+
+  const selectedOffer = useMemo(
+    () => offers.find((offer) => offer.id === activeOfferId),
+    [activeOfferId, offers]
+  );
 
   return (
     <div className="page page--gray page--main">
