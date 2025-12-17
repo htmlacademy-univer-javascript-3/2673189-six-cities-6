@@ -193,7 +193,6 @@ export const fetchFavoritesAction = createAsyncThunk<void, undefined, {
     const favoriteIds = new Set(favoritesFromServer.map((o) => o.id));
     const offers = getState()[NameSpace.Offers].offers;
 
-    // Keep the full offers list, but sync `isFavorite` flags with server favorites.
     dispatch(
       setOffers(
         offers.map((offer) => ({

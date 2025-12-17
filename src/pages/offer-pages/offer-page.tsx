@@ -71,7 +71,6 @@ export default function OfferPage(): JSX.Element {
       .unwrap()
       .then(() => {
         dispatch(fetchFavoritesAction());
-        // refresh offer details to sync `isFavorite` for the offer page itself
         dispatch(fetchOfferByIdAction(id));
       });
   };

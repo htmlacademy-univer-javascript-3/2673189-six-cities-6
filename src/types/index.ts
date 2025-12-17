@@ -3,3 +3,4 @@ export * from './offers.type';
 export * from './reviews.type';
 export * from './state.type';
 export * from './offer-dto.type';
+export * from './location.type';
