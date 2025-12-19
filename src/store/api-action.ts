@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '@types';
 import { saveToken, dropToken } from '../services/token';
@@ -52,10 +52,29 @@ export const loginAction = createAsyncThunk<void, UserData, {
 }>(
   'user/login',
   async ({login: email, password}, {dispatch, extra: api}) => {
-    const {data} = await api.post<User>(APIRoute.Login, {email, password});
-    saveToken(data.token);
-    dispatch(setUser(data));
-    dispatch(requireAuthorization(AuthStatus.AUTH));
+    dispatch(setError(null));
+    try {
+      const {data} = await api.post<User>(APIRoute.Login, {email, password});
+      saveToken(data.token);
+      dispatch(setUser(data));
+      dispatch(requireAuthorization(AuthStatus.AUTH));
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const details = (err.response?.data as unknown as { details?: Array<{ messages?: string[] }> } | undefined)?.details;
+        const messages = details
+          ?.flatMap((d) => d.messages ?? [])
+          .filter(Boolean);
+
+        if (messages && messages.length > 0) {
+          dispatch(setError(messages.join('\n')));
+        } else {
+          dispatch(setError('Login failed.'));
+        }
+      } else {
+        dispatch(setError('Login failed.'));
+      }
+      throw err;
+    }
   },
 );
 
