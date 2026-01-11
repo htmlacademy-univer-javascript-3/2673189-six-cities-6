@@ -64,14 +64,13 @@ export const loginAction = createAsyncThunk<void, UserData, {
         const messages = details
           ?.flatMap((d) => d.messages ?? [])
           .filter(Boolean);
-
         if (messages && messages.length > 0) {
           dispatch(setError(messages.join('\n')));
         } else {
-          dispatch(setError('Login failed.'));
+          dispatch(setError(null));
         }
       } else {
-        dispatch(setError('Login failed.'));
+        dispatch(setError(null));
       }
       throw err;
     }

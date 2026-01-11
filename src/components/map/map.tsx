@@ -10,6 +10,8 @@ type MapProps = {
     offers: Offer[];
     selectedOffer: Offer | undefined;
     className: string;
+    isInteractive?: boolean;
+    highlightSelected?: boolean;
   };
 
 const defaultCustomIcon = new Icon({
@@ -25,7 +27,7 @@ const currentCustomIcon = new Icon({
 });
 
 function Map(props: MapProps): JSX.Element {
-  const {city, offers, selectedOffer, className} = props;
+  const {city, offers, selectedOffer, className, isInteractive = true, highlightSelected = true} = props;
 
   const mapRef = useRef(null);
   const map = useMap(mapRef, city);
@@ -44,7 +46,7 @@ function Map(props: MapProps): JSX.Element {
 
           marker
             .setIcon(
-              selectedOffer !== undefined && offer.id === selectedOffer.id
+              highlightSelected && selectedOffer !== undefined && offer.id === selectedOffer.id
                 ? currentCustomIcon
                 : defaultCustomIcon
             )
@@ -56,7 +58,7 @@ function Map(props: MapProps): JSX.Element {
         map.removeLayer(markerLayer);
       };
     }
-  }, [map, offers, selectedOffer]);
+  }, [map, offers, selectedOffer, isInteractive, highlightSelected]);
 
   return <section className={className} style={{height: '500px'}} ref={mapRef}></section>;
 }
