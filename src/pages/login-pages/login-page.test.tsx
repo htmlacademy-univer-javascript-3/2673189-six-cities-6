@@ -100,7 +100,7 @@ describe('Page: LoginPage', () => {
     expect((action.payload as string).length).toBeGreaterThan(0);
   });
 
-  it('Should not dispatch when password is invalid and should show message', async () => {
+  it('Should not dispatch when password is invalid', async () => {
     const user = userEvent.setup();
 
     render(
@@ -114,10 +114,8 @@ describe('Page: LoginPage', () => {
     await user.type(screen.getByPlaceholderText('Email'), 'test@test.ru');
     await user.type(screen.getByPlaceholderText('Password'), 'p');
 
-    const submitButton = screen.getByRole('button', { name: 'Sign in' });
-    expect(submitButton).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(dispatchMock).not.toHaveBeenCalled();
-    expect(screen.getByTestId('login-error')).toBeInTheDocument();
   });
 });

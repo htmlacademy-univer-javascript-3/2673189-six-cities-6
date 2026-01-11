@@ -189,6 +189,8 @@ export default function OfferPage(): JSX.Element {
             offers={[mainOffer, ...(nearbyOffers ?? [])]}
             selectedOffer={mainOffer}
             className={MapClassName.Offer}
+            isInteractive={false}
+            highlightSelected
           />
         </section>
         <div className="container">
